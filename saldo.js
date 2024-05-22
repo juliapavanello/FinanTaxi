@@ -1,26 +1,39 @@
-const sequelize = require("sequelize");
-const banco2 = require("./banco")
+const { Sequelize, DataTypes } = require('sequelize');
+const banco2 = require('./banco');
 
-var saldo = banco2.conexao.define(
-    "saldo",
-    {
-        id:{
-            type:sequelize.INTEGER.UNSIGNED,
-            primaryKey: true,
-            autoIncrement:true
-        },
-        ganho:{
-            type:sequelize.DECIMAL.UNSIGNED,
-            allowNull:false
-        },
-        gasto:{
-            type:sequelize.DECIMAL.UNSIGNED,
-            allowNull:false
-        }
+const Saldo = banco2.conexao.define('Saldo', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
     },
-    {
-        timestamps: false // Esta opção impede que o Sequelize inclua automaticamente createdAt e updatedAt
+    inicio: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+    },
+    fim: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+    },
+    horasTrabalhadas: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+    },
+    ganho: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+    },
+    gasto: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+    },
+    saldo: {
+        type: DataTypes.DECIMAL, // Definindo como DECIMAL
+        allowNull: false,
     }
-);
+}, {
+    tableName: 'saldos',
+    timestamps: false,
+});
 
-module.exports = { saldo };
+module.exports = { Saldo };
