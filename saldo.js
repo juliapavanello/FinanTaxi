@@ -28,8 +28,28 @@ const Saldo = banco2.conexao.define('Saldo', {
         allowNull: false,
     },
     saldo: {
-        type: DataTypes.DECIMAL, // Definindo como DECIMAL
+        type: DataTypes.DECIMAL,
         allowNull: false,
+    },
+    kmInicial: {
+        type: DataTypes.DECIMAL,
+        allowNull: true,
+    },
+    kmFinal: {
+        type: DataTypes.DECIMAL,
+        allowNull: true,
+    },
+    kmRodados: {
+        type: DataTypes.DECIMAL,
+        allowNull: true,
+    },
+    saldoPorKmRodado: {
+        type: DataTypes.DECIMAL,
+        allowNull: true,
+    },
+    saldoPorHoraTrabalhada: {
+        type: DataTypes.DECIMAL,
+        allowNull: true,
     }
 }, {
     tableName: 'saldos',

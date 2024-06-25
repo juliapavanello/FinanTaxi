@@ -3,34 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro para Taxistas</title>
+    <title>FinanTaxi</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Controle Financeiro para Taxistas</h1>
-        <form id="saldo-form">
-            <input type="text" id="inicio" placeholder="Início (YYYY-MM-DD)" required>
-            <input type="text" id="fim" placeholder="Fim (YYYY-MM-DD)" required>
-            <input type="number" id="horasTrabalhadas" placeholder="Horas Trabalhadas" step="0.01" required>
-            <input type="number" id="ganho" placeholder="Ganho" step="0.01" required>
-            <input type="number" id="gasto" placeholder="Gasto" step="0.01" required>
-            <button type="submit">Adicionar</button>
+        <h1>FinanTaxi</h1>
+        
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
         </form>
-        <table>
-            <thead>
-                <tr>
-                    <th>Início</th>
-                    <th>Fim</th>
-                    <th>Horas Trabalhadas</th>
-                    <th>Ganho</th>
-                    <th>Gasto</th>
-                    <th>Saldo</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody id="saldos-list"></tbody>
-        </table>
+
+        <div id="saldo-container" style="display:none;">
+            <form id="saldo-form">
+                <input type="text" id="inicio" placeholder="Início" required>
+                <!-- required é para quando o usuario precisa infromar um valor -->
+                <input type="text" id="fim" placeholder="Fim" required>
+                <input type="number" id="horasTrabalhadas" placeholder="Horas Trabalhadas" required>
+                <input type="number" id="ganho" placeholder="Ganho" required>
+                <input type="number" id="gasto" placeholder="Gasto" required>
+                <input type="number" id="kmInicial" placeholder="Km Inicial" required>
+                <input type="number" id="kmFinal" placeholder="Km Final" required>
+                <button type="submit">Adicionar Saldo</button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Início</th>
+                        <th>Fim</th>
+                        <th>Horas Trabalhadas</th>
+                        <th>Ganho</th>
+                        <th>Gasto</th>
+                        <th>Saldo</th>
+                        <th>Km Inicial</th>
+                        <th>Km Final</th>
+                        <th>Km Rodados</th>
+                        <th>Saldo/Km Rodado</th>
+                        <th>Saldo/Hora Trabalhada</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="saldos-list">
+                    <!-- saldos serão adicionados aqui -->
+                </tbody>
+            </table>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>

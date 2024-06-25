@@ -1,67 +1,99 @@
-document.addEventListener('DOMContentLoaded', async function () {
-    const saldoForm = document.getElementById('saldo-form');
-    const saldosList = document.getElementById('saldos-list');
+const loginForm = document.getElementById('login-form');
+const saldoContainer = document.getElementById('saldo-container');
+const saldoForm = document.getElementById('saldo-form');
+let authToken = null;
 
-    // Função para carregar os saldos
-    async function loadSaldos() {
-        const response = await fetch('http://localhost:3001/saldos');
-        const saldos = await response.json();
-        saldosList.innerHTML = '';
-        saldos.forEach(saldo => {
-            const saldoItem = document.createElement('tr');
-            saldoItem.innerHTML = `
-                <td>${saldo.inicio}</td>
-                <td>${saldo.fim}</td>
-                <td>${saldo.horasTrabalhadas}</td>
-                <td>${saldo.ganho}</td>
-                <td>${saldo.gasto}</td>
-                <td>${saldo.saldo}</td>
-                <td><button onclick="deleteSaldo(${saldo.id})">Deletar</button></td>
-            `;
-            saldosList.appendChild(saldoItem);
-        });
-    }
+//  login
+async function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-    // Função para adicionar um saldo
-    saldoForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const inicio = document.getElementById('inicio').value;
-        const fim = document.getElementById('fim').value;
-        const horasTrabalhadas = document.getElementById('horasTrabalhadas').value;
-        const ganho = document.getElementById('ganho').value;
-        const gasto = document.getElementById('gasto').value;
-
-        const response = await fetch('http://localhost:3001/saldos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                inicio,
-                fim,
-                horasTrabalhadas,
-                ganho,
-                gasto
-            })
-        });
-
-        if (response.ok) {
-            loadSaldos();
-            saldoForm.reset();
-        }
+    const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
     });
 
-    // Função para deletar um saldo
-    window.deleteSaldo = async function (id) {
-        const response = await fetch(`http://localhost:3001/saldos/${id}`, {
-            method: 'DELETE'
-        });
+    const result = await response.json();
+    if (result.token) {
+        authToken = result.token;
+        loginForm.style.display = 'none';
+        saldoContainer.style.display = 'block';
+        loadSaldos();
+    } else {
+        alert('Credenciais inválidas');
+    }
+}
 
-        if (response.ok) {
-            loadSaldos();
+// carregar saldos 
+async function loadSaldos() {
+    const response = await fetch('/saldos/', {
+        headers: {
+            'Authorization': `Bearer ${authToken}`
         }
-    };
+    });
+    const saldos = await response.json();
+    const saldosList = document.getElementById('saldos-list');
+    saldosList.innerHTML = '';
+    saldos.forEach(saldo => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${saldo.inicio}</td>
+            <td>${saldo.fim}</td>
+            <td>${saldo.horasTrabalhadas}</td>
+            <td>${saldo.ganho}</td>
+            <td>${saldo.gasto}</td>
+            <td>${saldo.saldo}</td>
+            <td>${saldo.kmInicial}</td>
+            <td>${saldo.kmFinal}</td>
+            <td>${saldo.kmRodados}</td>
+            <td>${saldo.saldoPorKmRodado}</td>
+            <td>${saldo.saldoPorHoraTrabalhada}</td>
+            <td><button onclick="deleteSaldo(${saldo.id})">Deletar</button></td>
+        `;
+        saldosList.appendChild(row);
+    });
+}
 
-    // Carregar os saldos ao iniciar a aplicação
+// Adicionar saldo
+saldoForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const inicio = document.getElementById('inicio').value;
+    const fim = document.getElementById('fim').value;
+    const horasTrabalhadas = document.getElementById('horasTrabalhadas').value;
+    const ganho = document.getElementById('ganho').value;
+    const gasto = document.getElementById('gasto').value;
+    const kmInicial = document.getElementById('kmInicial').value;
+    const kmFinal = document.getElementById('kmFinal').value;
+
+    const response = await fetch('/saldos/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal })
+    });
+
+    const newSaldo = await response.json();
     loadSaldos();
+});
+
+// Deletar saldo
+async function deleteSaldo(id) {
+    await fetch(`/saldos/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${authToken}`
+        }
+    });
+    loadSaldos();
+}
+
+// Listener para login
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await login();
 });
