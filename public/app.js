@@ -1,5 +1,5 @@
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';  // Fallback para desenvolvimento
+const API_BASE_URL ='https://finantaxi-backend.onrender.com'  // Fallback para desenvolvimento
 
 // O restante do seu código permanece o mesmo
 

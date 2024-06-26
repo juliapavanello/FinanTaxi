@@ -6,7 +6,7 @@ const authRouter = require('./auth'); // Importando o roteador de autenticação
 const passport = require('./middleware'); // Importando o middleware de autenticação
 
 const app = express();
-const PORTA = process.env.PORT || 3001;
+
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -106,6 +106,8 @@ app.delete("/saldos/:id", passport.authenticate('jwt', { session: false }), asyn
     }
 });
 
+const PORTA = process.env.PORT || 3001; // Escolhe a porta do ambiente ou 3001 se nao houver ambiente
 app.listen(PORTA, function() {
     console.log("Servidor iniciado na porta " + PORTA);
 });
+
