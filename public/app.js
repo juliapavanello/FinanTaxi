@@ -1,14 +1,20 @@
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';  // Fallback para desenvolvimento
+
+// O restante do seu código permanece o mesmo
+
+// Atualize suas chamadas fetch para usar API_BASE_URL
 const loginForm = document.getElementById('login-form');
 const saldoContainer = document.getElementById('saldo-container');
 const saldoForm = document.getElementById('saldo-form');
 let authToken = null;
 
-//  login
+// Função de login
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    const response = await fetch('/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -27,9 +33,9 @@ async function login() {
     }
 }
 
-// carregar saldos 
+// Função para carregar saldos
 async function loadSaldos() {
-    const response = await fetch('/saldos/', {
+    const response = await fetch(`${API_BASE_URL}/saldos/`, {
         headers: {
             'Authorization': `Bearer ${authToken}`
         }
@@ -68,7 +74,7 @@ saldoForm.addEventListener('submit', async (e) => {
     const kmInicial = document.getElementById('kmInicial').value;
     const kmFinal = document.getElementById('kmFinal').value;
 
-    const response = await fetch('/saldos/', {
+    const response = await fetch(`${API_BASE_URL}/saldos/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -83,7 +89,7 @@ saldoForm.addEventListener('submit', async (e) => {
 
 // Deletar saldo
 async function deleteSaldo(id) {
-    await fetch(`/saldos/${id}`, {
+    await fetch(`${API_BASE_URL}/saldos/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${authToken}`

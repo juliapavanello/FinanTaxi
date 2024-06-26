@@ -1,10 +1,21 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config(); // Carrega as variáveis de ambiente do .env
 
-// Configure com as credenciais fornecidas
-const conexao = new Sequelize('FinanTaxi', 'JuliaEAna', 'Abcd&123', {
-    host: 'localhost',
-    dialect: 'mysql',
-    logging: console.log,
+if (!process.env.DATABASE_URL) {
+    throw new Error("A variável de ambiente DATABASE_URL não está definida.");
+}
+
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
 });
+
+const conexao = sequelize;
 
 module.exports = { conexao };
