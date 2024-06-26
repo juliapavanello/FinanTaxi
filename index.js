@@ -2,10 +2,11 @@ const express = require('express');
 const path = require('path');
 const banco2 = require("./banco");
 const { Saldo } = require("./saldo");
-const authRouter = require('./auth'); // aqui ele importa o roteador de autenticação do login
+const authRouter = require('./auth'); // Importando o roteador de autenticação
+const passport = require('./middleware'); // Importando o middleware de autenticação
 
 const app = express();
-const PORTA = 3001; // localhost:3001
+const PORTA = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -21,96 +22,90 @@ banco2.conexao.sync().then(() => {
     console.log("Banco de dados conectado.");
 });
 
-app.use('/auth', authRouter); // usando o roteador de autenticação para rotas de autenticação
+app.use('/auth', authRouter); // Usando o roteador de autenticação para rotas de autenticação
 
-//metodo para ler saldos
-app.get("/saldos/", async function(req, res) {
+app.get("/saldos/", passport.authenticate('jwt', { session: false }), async function(req, res) {
     const resultado = await Saldo.findAll();
     res.json(resultado);
 });
 
-//metodo para adicionar o saldo
-app.post("/saldos/", async function(req, res) {
-    const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal } = req.body;
-    const saldo = parseFloat(ganho) - parseFloat(gasto);
-    const kmRodados = kmFinal - kmInicial;
-    const saldoPorKmRodado = saldo / kmRodados;
-    const saldoPorHoraTrabalhada = saldo / horasTrabalhadas;
-    try {
-        const novoSaldo = await Saldo.create({
-            inicio,
-            fim,
-            horasTrabalhadas,
-            ganho,
-            gasto,
-            saldo,
-            kmInicial,
-            kmFinal,
-            kmRodados,
-            saldoPorKmRodado,
-            saldoPorHoraTrabalhada
-        });
-        res.status(201).json(novoSaldo);
-    } catch (error) {
-        console.error("Erro ao criar saldo:", error);
-        res.status(500).json({ error: 'Erro ao criar saldo' });
+app.get("/saldos/:id", passport.authenticate('jwt', { session: false }), async function(req, res) {
+    const resultado = await Saldo.findByPk(req.params.id);
+    if (resultado == null) {
+        res.status(404).send({});
+    } else {
+        res.json(resultado);
     }
 });
 
-//metodo para alterar
-app.put("/saldos/:id", async function(req, res) {
-    const saldoId = req.params.id;
-    const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal } = req.body;
-    const saldo = parseFloat(ganho) - parseFloat(gasto);
-    const kmRodados = kmFinal - kmInicial;
-    const saldoPorKmRodado = saldo / kmRodados;
-    const saldoPorHoraTrabalhada = saldo / horasTrabalhadas;
-    try {
-        const [numRows, updatedSaldo] = await Saldo.update({
-            inicio,
-            fim,
-            horasTrabalhadas,
-            ganho,
-            gasto,
-            saldo,
-            kmInicial,
-            kmFinal,
-            kmRodados,
-            saldoPorKmRodado,
-            saldoPorHoraTrabalhada
-        }, {
-            where: { id: saldoId },
-            returning: true
-        });
-        if (numRows === 0) {
-            res.status(404).json({ error: 'Saldo não encontrado' });
-        } else {
-            res.json(updatedSaldo[0]);
-        }
-    } catch (error) {
-        console.error("Erro ao atualizar saldo:", error);
-        res.status(500).json({ error: 'Erro ao atualizar saldo' });
+app.get("/saldos/ganho/:ganho", passport.authenticate('jwt', { session: false }), async function(req, res) {
+    const resultado = await Saldo.findAll({
+        where: { ganho: req.params.ganho }
+    });
+    if (resultado.length === 0) {
+        res.status(404).send({});
+    } else {
+        res.json(resultado);
     }
 });
 
-//metodo de deletar saldo
-app.delete("/saldos/:id", async function(req, res) {
-    const saldoId = req.params.id;
-    try {
-        const numRows = await Saldo.destroy({ where: { id: saldoId } });
-        if (numRows === 0) {
-            res.status(404).json({ error: 'Saldo não encontrado' });
-        } else {
-            res.status(204).end();
+app.post("/saldos/", passport.authenticate('jwt', { session: false }), async function(req, res) {
+    const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal, kmRodados, saldoPorKmRodado, saldoPorHoraTrabalhada } = req.body;
+    const saldo = parseFloat(ganho) - parseFloat(gasto); // Calculando o saldo
+    const resultado = await Saldo.create({
+        inicio,
+        fim,
+        horasTrabalhadas,
+        ganho,
+        gasto,
+        saldo,
+        kmInicial,
+        kmFinal,
+        kmRodados,
+        saldoPorKmRodado,
+        saldoPorHoraTrabalhada
+    });
+    res.json(resultado);
+});
+
+app.put("/saldos/:id", passport.authenticate('jwt', { session: false }), async function(req, res) {
+    const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal, kmRodados, saldoPorKmRodado, saldoPorHoraTrabalhada } = req.body;
+    const saldo = parseFloat(ganho) - parseFloat(gasto); // Calculando o saldo
+    const resultado = await Saldo.update({
+        inicio,
+        fim,
+        horasTrabalhadas,
+        ganho,
+        gasto,
+        saldo,
+        kmInicial,
+        kmFinal,
+        kmRodados,
+        saldoPorKmRodado,
+        saldoPorHoraTrabalhada
+    }, {
+        where: { id: req.params.id }
+    });
+    if (resultado[0] === 0) {
+        res.status(404).send({});
+    } else {
+        res.json(await Saldo.findByPk(req.params.id));
+    }
+});
+
+app.delete("/saldos/:id", passport.authenticate('jwt', { session: false }), async function(req, res) {
+    const resultado = await Saldo.destroy({
+        where: {
+            id: req.params.id
         }
-    } catch (error) {
-        console.error("Erro ao excluir saldo:", error);
-        res.status(500).json({ error: 'Erro ao excluir saldo' });
+    });
+    if (resultado === 0) {
+        res.status(404).send({});
+    } else {
+        res.status(204).send({});
     }
 });
 
 app.listen(PORTA, function() {
     console.log("Servidor iniciado na porta " + PORTA);
 });
-
-

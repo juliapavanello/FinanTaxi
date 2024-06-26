@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('./user');
 
 const authRouter = express.Router();
-const JWT_SECRET = 'your_jwt_secret';  // Use uma chave secreta segura e armazenada de forma segura
+const JWT_SECRET = process.env.JWT_SECRET;
 
 authRouter.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -19,19 +19,12 @@ authRouter.post('/register', async (req, res) => {
 
 authRouter.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    try {
-        const user = await User.findOne({ where: { username } });
-        if (!user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
+    const user = await User.findOne({ where: { username } });
+    if (user && await bcrypt.compare(password, user.password)) {
         const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+    } else {
+        res.status(401).json({ error: 'Invalid credentials' });
     }
 });
 
