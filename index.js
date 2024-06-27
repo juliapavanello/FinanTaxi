@@ -1,3 +1,5 @@
+require('dotenv').config();  // Carregar variáveis de ambiente do arquivo .env
+
 const express = require('express');
 const path = require('path');
 const banco2 = require("./banco");
@@ -6,7 +8,6 @@ const authRouter = require('./auth'); // Importando o roteador de autenticação
 const passport = require('./middleware'); // Importando o middleware de autenticação
 
 const app = express();
-
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -50,23 +51,29 @@ app.get("/saldos/ganho/:ganho", passport.authenticate('jwt', { session: false })
 });
 
 app.post("/saldos/", passport.authenticate('jwt', { session: false }), async function(req, res) {
-    const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal, kmRodados, saldoPorKmRodado, saldoPorHoraTrabalhada } = req.body;
-    const saldo = parseFloat(ganho) - parseFloat(gasto); // Calculando o saldo
-    const resultado = await Saldo.create({
-        inicio,
-        fim,
-        horasTrabalhadas,
-        ganho,
-        gasto,
-        saldo,
-        kmInicial,
-        kmFinal,
-        kmRodados,
-        saldoPorKmRodado,
-        saldoPorHoraTrabalhada
-    });
-    res.json(resultado);
+    try {
+        const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal, kmRodados, saldoPorKmRodado, saldoPorHoraTrabalhada } = req.body;
+        const saldo = parseFloat(ganho) - parseFloat(gasto); // Calculando o saldo
+        const novoSaldo = await Saldo.create({
+            inicio,
+            fim,
+            horasTrabalhadas,
+            ganho,
+            gasto,
+            saldo,
+            kmInicial,
+            kmFinal,
+            kmRodados,
+            saldoPorKmRodado,
+            saldoPorHoraTrabalhada
+        });
+        res.status(201).json(novoSaldo); // 201 Created
+    } catch (error) {
+        console.error('Erro ao adicionar saldo:', error);
+        res.status(500).json({ error: 'Erro ao adicionar saldo' });
+    }
 });
+
 
 app.put("/saldos/:id", passport.authenticate('jwt', { session: false }), async function(req, res) {
     const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal, kmRodados, saldoPorKmRodado, saldoPorHoraTrabalhada } = req.body;
@@ -106,8 +113,7 @@ app.delete("/saldos/:id", passport.authenticate('jwt', { session: false }), asyn
     }
 });
 
-const PORTA = process.env.PORT || 3001; // Escolhe a porta do ambiente ou 3001 se nao houver ambiente
+const PORTA = process.env.PORT || 3001; // Escolhe a porta do ambiente ou 3001 se não houver ambiente
 app.listen(PORTA, function() {
     console.log("Servidor iniciado na porta " + PORTA);
 });
-

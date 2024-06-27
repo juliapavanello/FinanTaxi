@@ -1,9 +1,6 @@
 
 const API_BASE_URL ='https://finantaxi-backend.onrender.com'  // Fallback para desenvolvimento
 
-// O restante do seu código permanece o mesmo
-
-// Atualize suas chamadas fetch para usar API_BASE_URL
 const loginForm = document.getElementById('login-form');
 const saldoContainer = document.getElementById('saldo-container');
 const saldoForm = document.getElementById('saldo-form');
@@ -40,27 +37,32 @@ async function loadSaldos() {
             'Authorization': `Bearer ${authToken}`
         }
     });
-    const saldos = await response.json();
-    const saldosList = document.getElementById('saldos-list');
-    saldosList.innerHTML = '';
-    saldos.forEach(saldo => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${saldo.inicio}</td>
-            <td>${saldo.fim}</td>
-            <td>${saldo.horasTrabalhadas}</td>
-            <td>${saldo.ganho}</td>
-            <td>${saldo.gasto}</td>
-            <td>${saldo.saldo}</td>
-            <td>${saldo.kmInicial}</td>
-            <td>${saldo.kmFinal}</td>
-            <td>${saldo.kmRodados}</td>
-            <td>${saldo.saldoPorKmRodado}</td>
-            <td>${saldo.saldoPorHoraTrabalhada}</td>
-            <td><button onclick="deleteSaldo(${saldo.id})">Deletar</button></td>
-        `;
-        saldosList.appendChild(row);
-    });
+    if (response.ok) {
+        const saldos = await response.json();
+        const saldosList = document.getElementById('saldos-list');
+        saldosList.innerHTML = '';
+        saldos.forEach(saldo => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${saldo.inicio}</td>
+                <td>${saldo.fim}</td>
+                <td>${saldo.horasTrabalhadas}</td>
+                <td>${saldo.ganho}</td>
+                <td>${saldo.gasto}</td>
+                <td>${saldo.saldo}</td>
+                <td>${saldo.kmInicial}</td>
+                <td>${saldo.kmFinal}</td>
+                <td>${saldo.kmRodados}</td>
+                <td>${saldo.saldoPorKmRodado}</td>
+                <td>${saldo.saldoPorHoraTrabalhada}</td>
+                <td><button onclick="deleteSaldo(${saldo.id})">Deletar</button></td>
+            `;
+            saldosList.appendChild(row);
+        });
+    } else {
+        const errorMessage = await response.text();
+        console.error('Erro ao carregar saldos:', errorMessage);
+    }
 }
 
 // Adicionar saldo
@@ -83,19 +85,32 @@ saldoForm.addEventListener('submit', async (e) => {
         body: JSON.stringify({ inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal })
     });
 
-    const newSaldo = await response.json();
-    loadSaldos();
+    if (response.ok) {
+        const newSaldo = await response.json();
+        loadSaldos();
+    } else {
+        const errorMessage = await response.text();
+        console.error('Erro ao adicionar saldo:', errorMessage);
+        alert('Erro ao adicionar saldo: ' + errorMessage);
+    }
 });
 
 // Deletar saldo
 async function deleteSaldo(id) {
-    await fetch(`${API_BASE_URL}/saldos/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/saldos/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${authToken}`
         }
     });
-    loadSaldos();
+
+    if (response.ok) {
+        loadSaldos();
+    } else {
+        const errorMessage = await response.text();
+        console.error('Erro ao deletar saldo:', errorMessage);
+        alert('Erro ao deletar saldo: ' + errorMessage);
+    }
 }
 
 // Listener para login
