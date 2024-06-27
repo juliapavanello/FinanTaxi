@@ -52,8 +52,21 @@ app.get("/saldos/ganho/:ganho", passport.authenticate('jwt', { session: false })
 
 app.post("/saldos/", passport.authenticate('jwt', { session: false }), async function(req, res) {
     try {
-        const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal, kmRodados, saldoPorKmRodado, saldoPorHoraTrabalhada } = req.body;
-        const saldo = parseFloat(ganho) - parseFloat(gasto); // Calculando o saldo
+        const { inicio, fim, horasTrabalhadas, ganho, gasto, kmInicial, kmFinal } = req.body;
+
+        // Calculando saldo
+        const saldo = parseFloat(ganho) - parseFloat(gasto);
+
+        // Calculando kmRodados
+        const kmRodados = parseFloat(kmFinal) - parseFloat(kmInicial);
+
+        // Exemplo de cálculo para saldoPorKmRodado (valor fictício, ajuste conforme sua lógica de negócio)
+        const saldoPorKmRodado = saldo / kmRodados;
+
+        // Exemplo de cálculo para saldoPorHoraTrabalhada (valor fictício, ajuste conforme sua lógica de negócio)
+        const saldoPorHoraTrabalhada = saldo / parseFloat(horasTrabalhadas);
+
+        // Criando novo saldo com todos os valores calculados
         const novoSaldo = await Saldo.create({
             inicio,
             fim,
@@ -67,12 +80,14 @@ app.post("/saldos/", passport.authenticate('jwt', { session: false }), async fun
             saldoPorKmRodado,
             saldoPorHoraTrabalhada
         });
+
         res.status(201).json(novoSaldo); // 201 Created
     } catch (error) {
         console.error('Erro ao adicionar saldo:', error);
         res.status(500).json({ error: 'Erro ao adicionar saldo' });
     }
 });
+
 
 
 app.put("/saldos/:id", passport.authenticate('jwt', { session: false }), async function(req, res) {

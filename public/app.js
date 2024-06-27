@@ -118,3 +118,57 @@ loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     await login();
 });
+
+
+// // Adicionar saldo
+// saldoForm.addEventListener('submit', async (e) => {
+//     e.preventDefault();
+//     const inicio = document.getElementById('inicio').value;
+//     const fim = document.getElementById('fim').value;
+//     const horasTrabalhadas = document.getElementById('horasTrabalhadas').value;
+//     const ganho = document.getElementById('ganho').value;
+//     const gasto = document.getElementById('gasto').value;
+//     const kmInicial = document.getElementById('kmInicial').value;
+//     const kmFinal = document.getElementById('kmFinal').value;
+
+//     // Calcular kmRodados
+//     const kmRodados = parseFloat(kmFinal) - parseFloat(kmInicial);
+
+//     // Calcular saldo
+//     const saldo = parseFloat(ganho) - parseFloat(gasto);
+
+//     // Calcular saldoPorKmRodado (evitar divisão por zero)
+//     const saldoPorKmRodado = kmRodados > 0 ? saldo / kmRodados : null;
+
+//     // Calcular saldoPorHoraTrabalhada (evitar divisão por zero)
+//     const saldoPorHoraTrabalhada = horasTrabalhadas > 0 ? saldo / horasTrabalhadas : null;
+
+//     const response = await fetch(`${API_BASE_URL}/saldos/`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${authToken}`
+//         },
+//         body: JSON.stringify({
+//             inicio,
+//             fim,
+//             horasTrabalhadas,
+//             ganho,
+//             gasto,
+//             kmInicial,
+//             kmFinal,
+//             kmRodados,
+//             saldoPorKmRodado,
+//             saldoPorHoraTrabalhada
+//         })
+//     });
+
+//     if (response.ok) {
+//         const newSaldo = await response.json();
+//         loadSaldos();
+//     } else {
+//         const errorMessage = await response.text();
+//         console.error('Erro ao adicionar saldo:', errorMessage);
+//         alert('Erro ao adicionar saldo: ' + errorMessage);
+//     }
+// });
