@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); // Carrega as variáveis de ambiente do .env
+require('dotenv').config(); // carrega as variáveis que estao no .env
 
 if (!process.env.DATABASE_URL) {
     throw new Error("A variável de ambiente DATABASE_URL não está definida.");

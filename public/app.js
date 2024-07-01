@@ -1,12 +1,12 @@
 
-const API_BASE_URL ='https://finantaxi-backend.onrender.com'  // Fallback para desenvolvimento
+const API_BASE_URL ='https://finantaxi-backend.onrender.com'  // url do sistema
 
 const loginForm = document.getElementById('login-form');
 const saldoContainer = document.getElementById('saldo-container');
 const saldoForm = document.getElementById('saldo-form');
 let authToken = null;
 
-// Função de login
+// função de login
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -26,7 +26,7 @@ async function login() {
         saldoContainer.style.display = 'block';
         loadSaldos();
     } else {
-        alert('Credenciais inválidas');
+        alert('Informações inválidas');
     }
 }
 
@@ -65,7 +65,7 @@ async function loadSaldos() {
     }
 }
 
-// Adicionar saldo
+// função para adicionar saldo
 saldoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const inicio = document.getElementById('inicio').value;
@@ -93,9 +93,17 @@ saldoForm.addEventListener('submit', async (e) => {
         console.error('Erro ao adicionar saldo:', errorMessage);
         alert('Erro ao adicionar saldo: ' + errorMessage);
     }
+
+    document.getElementById("inicio").value="";
+    document.getElementById("fim").value="";
+    document.getElementById("horasTrabalhadas").value="";
+    document.getElementById("ganho").value="";
+    document.getElementById("gasto").value="";
+    document.getElementById("kmInicial").value="";
+    document.getElementById("KmFinal").value="";
 });
 
-// Deletar saldo
+// função para deletar saldo
 async function deleteSaldo(id) {
     const response = await fetch(`${API_BASE_URL}/saldos/${id}`, {
         method: 'DELETE',
@@ -120,55 +128,3 @@ loginForm.addEventListener('submit', async (e) => {
 });
 
 
-// // Adicionar saldo
-// saldoForm.addEventListener('submit', async (e) => {
-//     e.preventDefault();
-//     const inicio = document.getElementById('inicio').value;
-//     const fim = document.getElementById('fim').value;
-//     const horasTrabalhadas = document.getElementById('horasTrabalhadas').value;
-//     const ganho = document.getElementById('ganho').value;
-//     const gasto = document.getElementById('gasto').value;
-//     const kmInicial = document.getElementById('kmInicial').value;
-//     const kmFinal = document.getElementById('kmFinal').value;
-
-//     // Calcular kmRodados
-//     const kmRodados = parseFloat(kmFinal) - parseFloat(kmInicial);
-
-//     // Calcular saldo
-//     const saldo = parseFloat(ganho) - parseFloat(gasto);
-
-//     // Calcular saldoPorKmRodado (evitar divisão por zero)
-//     const saldoPorKmRodado = kmRodados > 0 ? saldo / kmRodados : null;
-
-//     // Calcular saldoPorHoraTrabalhada (evitar divisão por zero)
-//     const saldoPorHoraTrabalhada = horasTrabalhadas > 0 ? saldo / horasTrabalhadas : null;
-
-//     const response = await fetch(`${API_BASE_URL}/saldos/`, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${authToken}`
-//         },
-//         body: JSON.stringify({
-//             inicio,
-//             fim,
-//             horasTrabalhadas,
-//             ganho,
-//             gasto,
-//             kmInicial,
-//             kmFinal,
-//             kmRodados,
-//             saldoPorKmRodado,
-//             saldoPorHoraTrabalhada
-//         })
-//     });
-
-//     if (response.ok) {
-//         const newSaldo = await response.json();
-//         loadSaldos();
-//     } else {
-//         const errorMessage = await response.text();
-//         console.error('Erro ao adicionar saldo:', errorMessage);
-//         alert('Erro ao adicionar saldo: ' + errorMessage);
-//     }
-// });
