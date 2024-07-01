@@ -100,7 +100,7 @@ saldoForm.addEventListener('submit', async (e) => {
     document.getElementById("ganho").value="";
     document.getElementById("gasto").value="";
     document.getElementById("kmInicial").value="";
-    document.getElementById("KmFinal").value="";
+    document.getElementById("kmFinal").value="";
 });
 
 // função para deletar saldo
