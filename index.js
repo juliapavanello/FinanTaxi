@@ -60,13 +60,13 @@ app.post("/saldos/", passport.authenticate('jwt', { session: false }), async fun
         // Calculando kmRodados
         const kmRodados = parseFloat(kmFinal) - parseFloat(kmInicial);
 
-        // Exemplo de cálculo para saldoPorKmRodado (valor fictício, ajuste conforme sua lógica de negócio)
+        // calculo por km rodado
         const saldoPorKmRodado = saldo / kmRodados;
 
-        // Exemplo de cálculo para saldoPorHoraTrabalhada (valor fictício, ajuste conforme sua lógica de negócio)
+        // cálculo para saldoPorHoraTrabalhada 
         const saldoPorHoraTrabalhada = saldo / parseFloat(horasTrabalhadas);
 
-        // Criando novo saldo com todos os valores calculados
+        // criando novo saldo com os valores calculados acima
         const novoSaldo = await Saldo.create({
             inicio,
             fim,
@@ -81,7 +81,8 @@ app.post("/saldos/", passport.authenticate('jwt', { session: false }), async fun
             saldoPorHoraTrabalhada
         });
 
-        res.status(201).json(novoSaldo); // 201 Created
+        res.status(201).json(novoSaldo); // 201 
+        alert("Adicionado")
     } catch (error) {
         console.error('Erro ao adicionar saldo:', error);
         res.status(500).json({ error: 'Erro ao adicionar saldo' });

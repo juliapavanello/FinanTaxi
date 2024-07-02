@@ -101,6 +101,7 @@ saldoForm.addEventListener('submit', async (e) => {
     document.getElementById("gasto").value="";
     document.getElementById("kmInicial").value="";
     document.getElementById("kmFinal").value="";
+    alert("Saldo adicionado com sucesso");
 });
 
 // função para deletar saldo
