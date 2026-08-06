@@ -82,6 +82,3 @@ O servidor sobe por padrão em `http://localhost:3001`.
 
 > Rotas autenticadas exigem o header `Authorization: Bearer <token>`.
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT — veja o arquivo [LICENSE](LICENSE) para mais detalhes.
